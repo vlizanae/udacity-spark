@@ -16,6 +16,9 @@ os.environ['AWS_SECRET_ACCESS_KEY'] = config['AWS_SECRET_ACCESS_KEY']
 
 
 def create_spark_session():
+    '''
+      Initializes the Spark session with the required packages and leaves it ready for execution.
+    '''
     spark = (SparkSession
         .builder
         .config("spark.jars.packages", "org.apache.hadoop:hadoop-aws:2.7.0") \
@@ -24,6 +27,11 @@ def create_spark_session():
 
 
 def process_song_data(spark, input_data, output_data):
+    '''
+      Takes data from the transactional song files and transforms it into the songs and artists
+      analytical tables. Steps are commented along the way, in summary these tables are dimmension
+      tables that consist on a subset of columns with handled duplicates.
+    '''
     # get filepath to song data file
     song_data = os.path.join(input_data, 'song_data/*/*/*/*.json')
     
@@ -70,6 +78,11 @@ def process_song_data(spark, input_data, output_data):
 
     
 def process_log_data(spark, input_data, output_data):
+    '''
+      Takes data from the transactional log files and transforms it into the time and users
+      analytical tables. Afterwards, the dataset is merged with the songs and artist tables
+      in order to build the fact table songplays. Steps are commented along the way.
+    '''
     # get filepath to log data file
     log_data = os.path.join(input_data, 'log_data/*/*/*.json')
 
@@ -163,9 +176,12 @@ def process_log_data(spark, input_data, output_data):
 
     
 def main():
+    '''
+      The whole process is run.
+    '''
     spark = create_spark_session()
     input_data = "s3://udacity-dend/"
-    output_data = "s3://vlizanaudacitydatalakeoutput/"
+    output_data = "s3://vlizanaudacitydatalakeoutput/analytics/"
     
     process_song_data(spark, input_data, output_data)    
     process_log_data(spark, input_data, output_data)
